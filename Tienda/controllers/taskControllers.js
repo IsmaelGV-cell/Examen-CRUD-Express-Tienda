@@ -1,6 +1,11 @@
+/**
+ * Código para controlar las tareas relacionadas con la base de datos.
+ */
+
 const conector = require('../bd/mysql');
 const instanciaControlador = {};
 
+// Obtiene todas las tareas de una tabla específica.
 instanciaControlador.getAllTasks = (req, res) => {
     const tabla = req.params.tabla;
     const sql = `SELECT * FROM ${tabla}`;
@@ -19,9 +24,9 @@ instanciaControlador.getAllTasks = (req, res) => {
         }
 
     });
-
 }
 
+// Obtiene una tarea específica de una tabla.
 instanciaControlador.getTasks = (req, res) => {
     const id = req.params.id;
     const tabla = req.params.tabla;
@@ -44,6 +49,7 @@ instanciaControlador.getTasks = (req, res) => {
     });
 }
 
+// Obtiene todas las tareas relacionadas con fabricantes y productos.
 instanciaControlador.getEverythingTasks = (req, res) => {
 
     const sql = `SELECT fabricante.id, fabricante.nombre AS FABRICANTE, producto.id, producto.nombre, producto.precio, producto.id_fabricante
@@ -68,12 +74,13 @@ instanciaControlador.getEverythingTasks = (req, res) => {
 
 }
 
+// Obtiene todos los productos relacionados con un fabricante específico.
 instanciaControlador.getEverythingProducts = (req, res) => {
     const fabricante = req.params.fabricante;
-    const sql = `SELECT UPPER(fabricante.nombre) AS NOMBRE_FABRICANTE, producto.id AS ID_DEL_PRODUCTO, producto.nombre AS NOMBRE, producto.precio AS PRECIO_€, producto.precio * 1.2 AS PRECIO_$
+    const sql = `SELECT UPPER(fabricante.nombre) AS NOMBRE_FABRICANTE, producto.id AS ID_DEL_PRODUCTO, producto.nombre AS NOMBRE, producto.precio AS PRECIO_€, ROUND(producto.precio * 1.2) AS PRECIO_$
     FROM fabricante
     INNER JOIN producto
-    ON producto.id_fabricante = fabricante.id WHERE fabricante.nombre = ?;`;
+    ON producto.id_fabricante = fabricante.id WHERE fabricante.nombre = ? ORDER BY producto.precio ASC;`;
 
     conector.query(sql,[fabricante], (error, resultado) => {
         if (error)
@@ -92,6 +99,7 @@ instanciaControlador.getEverythingProducts = (req, res) => {
 
 }
 
+// Crea una nueva tarea en la tabla especificada.
 instanciaControlador.createTasks = (req, res) => {
 
     const tabla = req.params.tabla;
@@ -120,6 +128,7 @@ instanciaControlador.createTasks = (req, res) => {
     }
 }
 
+// Actualiza una tarea en la tabla especificada.
 instanciaControlador.updateTasks = (req, res) => {
 
     const tabla = req.params.tabla;
@@ -151,6 +160,7 @@ instanciaControlador.updateTasks = (req, res) => {
     }
 }
 
+// Elimina una tarea de la tabla especificada.
 instanciaControlador.deleteTasks = (req, res) => {
     const tabla = req.params.tabla;
     const id = req.params.id;
